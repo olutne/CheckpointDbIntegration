@@ -5,4 +5,5 @@ namespace DataAccess.Interface;
 public interface ITripDao
 {
 	List<Trip> GetTripsForUser(int userId);
+	List<Trip> GetAllTrips();
 }

@@ -14,4 +14,13 @@ public class TripDao : ITripDao {
 			.OrderBy(t => t.StartTime) 
 			.ToList();
 	}
+
+	public List<Trip> GetAllTrips()
+	{
+		using var db = new CheckpointDbContext();
+		return db.Trips.AsNoTracking()
+			.OrderBy(t => t.StartTime)
+			.ToList();
+	}
+
 }
