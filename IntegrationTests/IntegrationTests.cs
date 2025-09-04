@@ -1,13 +1,14 @@
 ﻿// IntegrationTests/Tests.cs
 using BusinessLayer;
+using BusinessLayer.Service;
 using DataAccess;
 using DataAccess.Methods;
 using Domain;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System;
 using System.Linq;
-using BusinessLayer.Service;
 
 namespace IntegrationTests {
 	public class Tests {
@@ -108,6 +109,32 @@ namespace IntegrationTests {
 			var (userId, tripCount) = result!.Value;
 			Assert.That(userId, Is.EqualTo(1));
 			Assert.That(tripCount, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void Cannot_Have_Two_Active_Trips_For_Same_Scooter()
+		{
+			using var db = new CheckpointDbContext();
+
+			var t0 = new DateTime(2025, 1, 1, 9, 0, 0, DateTimeKind.Utc);
+
+			// Forsøk på tur #2 som også er AKTIV (EndTime = null) for samme scooter
+			db.Trips.Add(new Trip
+			{
+				Id = 2,
+				UserId = 1,
+				ScooterId = 1,  
+				StartTime = t0,
+				EndTime = null, 
+				Distance = 0m,
+				Cost = 0m
+			});
+
+			// Forvent at databasen nekter dette pga unik filtrert indeks
+			Assert.That(
+				() => db.SaveChanges(),
+				Throws.TypeOf<DbUpdateException>()
+			);
 		}
 	}
 }
