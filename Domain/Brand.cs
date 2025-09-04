@@ -2,6 +2,8 @@
 	public enum Brand {
 		Voi,
 		Ryde,
-		Tier
+		Tier,
+		Bolt,
+		Other
 	}
 }

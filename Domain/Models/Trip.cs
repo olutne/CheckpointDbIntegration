@@ -6,7 +6,7 @@
 
 		public DateTime? EndTime { get; set; }
 
-		public double Distance { get; set; }
+		public decimal Distance { get; set; }
 
 		public decimal Cost { get; set; }
 

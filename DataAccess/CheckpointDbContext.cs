@@ -6,21 +6,6 @@ namespace DataAccess {
 	{
 		public DbSet<Scooter> Scooters => Set<Scooter>();
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-
-			// ----- User -----
-			modelBuilder.Entity<User>(b =>
-			{
-				b.Property(x => x.Name).IsRequired().HasMaxLength(200);
-				b.Property(x => x.PhoneNumber).IsRequired().HasMaxLength(32);
-				b.HasIndex(x => x.PhoneNumber).IsUnique(); 
-			});
-			// ----- Scooter -----
-			modelBuilder.Entity<Scooter>()
-				.HasCheckConstraint("CK_Scooter_BatteryCapacity", "\"batterycapacity\" BETWEEN 1 AND 100");
-		}
-
 		public DbSet<User> Users => Set<User>();
 		public DbSet<Trip> Trips => Set<Trip>();
 
@@ -32,6 +17,39 @@ namespace DataAccess {
 			                         "Password=postgres;" +
 			                         "Database=scooter;")
 				.UseLowerCaseNamingConvention();
+		}
+
+
+
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			// ----- User -----
+			modelBuilder.Entity<User>(b =>
+			{
+				b.Property(x => x.Name).IsRequired().HasMaxLength(200);
+				b.Property(x => x.PhoneNumber).IsRequired().HasMaxLength(32);
+				b.HasIndex(x => x.PhoneNumber).IsUnique();
+			});
+
+			// ----- Scooter -----
+			modelBuilder.Entity<Scooter>()
+				.HasCheckConstraint("CK_Scooter_BatteryCapacity", "\"batterycapacity\" BETWEEN 1 AND 100");
+
+			// ----- Trip -----
+			modelBuilder.Entity<Trip>(b =>
+			{
+				b.Property(x => x.StartTime).IsRequired();
+
+				// Presisjon: km med to desimaler (0.01 km) og kostnad 2 desimaler
+				b.Property(x => x.Distance).HasPrecision(9, 2);
+				b.Property(x => x.Cost).HasPrecision(10, 2);
+
+				// Ikke-negative verdier
+				b.HasCheckConstraint("CK_Trip_DistanceNonNegative", "\"distance\" >= 0");
+				b.HasCheckConstraint("CK_Trip_CostNonNegative", "\"cost\" >= 0");
+
+			});
 		}
 	}
 }
