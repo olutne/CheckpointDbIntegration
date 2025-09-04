@@ -34,7 +34,10 @@ namespace DataAccess {
 
 			// ----- Scooter -----
 			modelBuilder.Entity<Scooter>()
-				.HasCheckConstraint("CK_Scooter_BatteryCapacity", "\"batterycapacity\" BETWEEN 1 AND 100");
+				.ToTable(t =>
+				{
+					t.HasCheckConstraint("CK_Scooter_BatteryCapacity", "\"batterycapacity\" BETWEEN 1 AND 100");
+				});
 
 			// ----- Trip -----
 			modelBuilder.Entity<Trip>(b =>
@@ -46,8 +49,11 @@ namespace DataAccess {
 				b.Property(x => x.Cost).HasPrecision(10, 2);
 
 				// Ikke-negative verdier
-				b.HasCheckConstraint("CK_Trip_DistanceNonNegative", "\"distance\" >= 0");
-				b.HasCheckConstraint("CK_Trip_CostNonNegative", "\"cost\" >= 0");
+				b.ToTable(t =>
+				{
+					t.HasCheckConstraint("CK_Trip_DistanceNonNegative", "\"distance\" >= 0");
+					t.HasCheckConstraint("CK_Trip_CostNonNegative", "\"cost\" >= 0");
+				});
 
 			});
 		}
